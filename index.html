@@ -2,25 +2,41 @@
 <html lang="en">
 <head>
   <meta charset=UTF-8>
-  <title>My first Vue app</title> <!--Maybe change this to a local install?-->
+  <title>Attribute roll: card draft</title> <!--Maybe change this to a local install?-->
+
+
+  <link href="css/style.css" rel="stylesheet" type="text/css">
+
   <script src="https://unpkg.com/vue@2"></script>
   <script type="text/javascript" src="DiceFunctions.js"></script>
   <script type="text/javascript" src="StatCards.js"></script>
-  <!--<script type="text/javascript" src="HelloModule.js"></script>-->
-  <!--<script type="text/javascript" src="Hello.js"></script>-->
 </head>
 
 <body>
 
   <div id="app-dealer">
     <button v-on:click="Roll">Roll your attribute cards!</button>
-    <ol>
+    <!--<ol>
       <statcard-card
         v-for="item in StatCardPool"
         v-bind:statcard="item"
         v-bind:key="item.id"
       ></statcard-card>
-    </ol>
+    </ol>-->
+
+    <div class="cardlist_initial">
+      <statcard-imagecard
+          class="card"
+          v-for="item in StatCardPool"
+          v-bind:statcard="item"
+          v-bind:key="item.id"
+      ></statcard-imagecard>
+
+    </div>
+
+    <div v-if="Rolled">
+      <button>Accept and draft!</button>
+    </div>
   </div>
 
   <script>
@@ -30,19 +46,26 @@
       template: '<li><table><tr>{{ statcard.High }}</tr><tr>{{ statcard.Low }}</tr></table></li>'
     })
 
+    Vue.component('statcard-imagecard', {
+      props: ['statcard'],
+      template: '<p class="imagecard"><table><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</p>'
+    })
+
     var appdealer = new Vue({
       el: '#app-dealer',
       data: {
         CM: new CardMaker(),
         Rolls: 0,
+        Rolled: false,
         StatCardPool: [
-          {High:"none",Low:"yet",id:0}, 
+          {High:"-",Low:"-",Points:"0",id:0}, 
         ]
       },
       methods: {
         Roll: function() {
           this.Rolls = this.CM.RollPool();
           this.StatCardPool = this.Rolls.Deal();
+          this.Rolled = true;
         }
       }
     })
