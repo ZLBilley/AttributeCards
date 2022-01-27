@@ -61,7 +61,7 @@ class CardMaker {
     constructor() {
         this.Roll = dl4d6;
         this.PointBuyConstraint = false;
-        this.PointBuy = 25;
+        this.PointBuyPoints = 25;
         
         this.PartySize = 4;
         this.AttrsPerCharacter = 6;
@@ -104,3 +104,42 @@ class CardMaker {
     }
             
 }
+
+class PointBuySystem {
+
+    constructor(SystemType) {
+        this.SetSystem(SystemType);
+    }
+
+    SetSystem(SystemType) {
+        this.PBType = SystemType;
+    }
+
+    GetPoints(n) {
+        switch(this.PBType) {
+            case "DD35":return this.DD35(n);
+            break;
+
+            default:return n;
+        }
+    }
+
+    //3.5e D&D
+    DD35(n) {
+        if(n<15) {
+            return n-8;
+        } else {
+            let AttrList = {
+                15:8,
+                16:10,
+                17:13,
+                18:16
+            }
+            return AttrList[n]
+        }
+
+    }
+
+}
+
+module.exports = {PointBuySystem,CardMaker,CardPool};
