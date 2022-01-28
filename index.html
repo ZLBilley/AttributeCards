@@ -6,10 +6,44 @@
 
 
   <link href="css/style.css" rel="stylesheet" type="text/css">
+  <link href="css/helpmenu.css" rel="stylesheet" type="text/css">
 
   <script src="https://unpkg.com/vue@2"></script>
   <script type="text/javascript" src="DiceFunctions.js"></script>
   <script type="text/javascript" src="StatCards.js"></script>
+
+
+    <script type="text/x-template" id="help-template">
+     <transition name="modal">
+        <div class="popup-mask">
+          <div class="help-wrapper">
+            <div class="help-container">
+
+              <div class="help-header">
+                <slot name="header">
+                  Help?
+                </slot>
+              </div>
+
+              <div class="help-text">
+                <slot name="body">
+                  No help is available
+                </slot>
+              </div>
+
+              <div class="help-footer">
+                <slot name="footer">
+                  <button class="help-default-close" @click="$emit('close')">
+                    Close
+                  </button>
+                </slot>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </script>
+
 </head>
 
 <body>
@@ -41,7 +75,12 @@
         <option value="DD35">D&D 3.5 standard</option>
         <option value="PF1E">Pathfinder, 1st edition</option>
       </select>
-      ?
+
+      <button id="show-help" @click="showHelp.PointBuy = true">?</button>
+      <help-popup v-if="showHelp.PointBuy" @close="showHelp.PointBuy = false" name="helpPopupPointBuy">
+        <h3 slot="header">{{ PointBuyMenu[PB.PBType].label }}</h3>
+        <span slot="body">{{ PointBuyMenu[PB.PBType].helptext }}</span>
+      </help-popup>
     </div>
 
     <button v-on:click="Roll">Roll your attribute cards!</button>
@@ -89,26 +128,39 @@
       template: '<div> {{ pboption.label }} </div>'
     })
     
-    Vue.component('help-display', {
-      props: ['help'],
-      template:'<div> {{ help.text }} <.div}'
-    })
+    Vue.component("help-popup", {
+      template: "#help-template"
+    });
+
 
     var appdealer = new Vue({
       el: '#app-dealer',
       data: {
         CM: new CardMaker(),
-        PB: new PointBuySystem(),
+        PB: new PointBuySystem("def"),
         Rolls: 0,
         Rolled: false,
         StatCardPool: [
           {High:"-",Low:"-",Points:"0",id:0}, 
         ],
         //currently broken
+        /*
         PointBuyMenu: [
-        {label:"one to one",ref:"",id:100},
+        {label:"One to one",ref:"",id:100},
         {label:"D&D 3.5 standard",ref:"DD35",id:101},
-        ],
+        {label:"Pathfinder, 1st edition",ref:"PF1E",id:101},
+        ],*/
+        PointBuyMenu: {
+        "def":{label:"One to one",ref:"def",id:100,helptext:
+        'Points are equal to the straight dieroll.'},
+        "DD35":{label:"D&D 3.5 standard",ref:"DD35",id:101,helptext:
+        'Uses the point buy system from the D&D 3.5e DMG, page 169.\r\n Values less than 8 are worth minus points equal to the difference.'},
+        "PF1E":{label:"Pathfinder, 1st edition",ref:"PF1E",id:101,helptext:
+        'Uses the method found at https://www.d20pfsrd.com/basics-ability-scores/ability-scores/ Smaller attributes are calculated using the same pattern (point value change is the same as the attribute modifier.'},
+        },    
+        showHelp:{
+          PointBuy:false,
+        }
       },
       methods: {
         Roll: function() {
