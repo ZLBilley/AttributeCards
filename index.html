@@ -33,6 +33,7 @@
 
               <div class="help-footer">
                 <slot name="footer">
+                  &#20
                   <button class="help-default-close" @click="$emit('close')">
                     Close
                   </button>
@@ -74,6 +75,7 @@
         <option value="def">One-to-one</option>
         <option value="DD35">D&D 3.5 standard</option>
         <option value="PF1E">Pathfinder, 1st edition</option>
+        <option value="PF1E_f">Pathfinder, 1st edition (strict)</option>
       </select>
 
       <button id="show-help" @click="showHelp.PointBuy = true">?</button>
@@ -167,8 +169,10 @@
         '<p>Points are equal to the straight dieroll.</p>'},
         "DD35":{label:"D&D 3.5 standard",ref:"DD35",id:101,helptext:
         '<p>Uses the point buy system from the D&D 3.5e DMG, page 169.<br/><br/>Values less than 8 are worth minus points equal to the difference.</p>'},
-        "PF1E":{label:"Pathfinder, 1st edition",ref:"PF1E",id:101,helptext:
+        "PF1E":{label:"Pathfinder, 1st edition",ref:"PF1E",id:102,helptext:
         '<p>Uses the method found <a href="https://www.d20pfsrd.com/basics-ability-scores/ability-scores/" target="_blank">here</a>. Smaller attributes are calculated using the same pattern (point value change is the same as the attribute modifier.)</p>'},
+        "PF1E_f":{label:"Pathfinder, 1st edition (strict)",ref:"PF1E",id:103,helptext:
+        '<p>Uses the method found <a href="https://www.d20pfsrd.com/basics-ability-scores/ability-scores/" target="_blank">here</a>. Attributes smaller than 7 are worth the same as 7. This keeps low scores from cancelling out high ones too much.</p>'},
         }, 
               
         showHelp:{

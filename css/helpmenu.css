@@ -35,11 +35,13 @@
 }
 
 .help-text {
-  margin: 20px 0;
+  margin: 20px 0px;
+  margin-bottom: 30px;
 }
 
 .help-default-close {
   float: right;
+  margin-bottom: 20px;
 }
 
 /*
