@@ -82,7 +82,7 @@
       <help-popup v-if="showHelp.PointBuy" @close="showHelp.PointBuy = false" name="helpPopupPointBuy">
         <h3 slot="header">{{ PointBuyMenu[PB.PBType].label }}</h3>
         <!--<div slot="body">{{ PointBuyMenu[PB.PBType].helptext }}</div>-->
-        <component slot="body" :is="PointBuyMenu[PB.PBType].helptext && {template:PointBuyMenu[PB.PBType].helptext, data: function() { return fakedata}}"></component>
+        <component slot="body" :is="PointBuyMenu[PB.PBType].helptext && {template:PointBuyMenu[PB.PBType].helptext, data: function() { return {} }}"></component>
       </help-popup>
     </div>
 
@@ -143,7 +143,6 @@
         PB: new PointBuySystem("def"),
         Rolls: 0,
         Rolled: false,
-        fakedata:{},
         StatCardPool: [
           {High:"-",Low:"-",Points:"0",id:0}, 
         ],
