@@ -71,7 +71,7 @@
     <div id="cardlistoptions">
       Point Buy type
       <select name="select_PBType" @change="onSelect_PBMenu($event)">
-        <option value="">One-to-one</option>
+        <option value="def">One-to-one</option>
         <option value="DD35">D&D 3.5 standard</option>
         <option value="PF1E">Pathfinder, 1st edition</option>
       </select>
@@ -79,7 +79,8 @@
       <button id="show-help" @click="showHelp.PointBuy = true">?</button>
       <help-popup v-if="showHelp.PointBuy" @close="showHelp.PointBuy = false" name="helpPopupPointBuy">
         <h3 slot="header">{{ PointBuyMenu[PB.PBType].label }}</h3>
-        <span slot="body">{{ PointBuyMenu[PB.PBType].helptext }}</span>
+        <!--<div slot="body">{{ PointBuyMenu[PB.PBType].helptext }}</div>-->
+        <component slot="body" :is="PointBuyMenu[PB.PBType].helptext && {template:PointBuyMenu[PB.PBType].helptext, data: function() { return fakedata}}"></component>
       </help-popup>
     </div>
 
@@ -135,11 +136,13 @@
 
     var appdealer = new Vue({
       el: '#app-dealer',
-      data: {
+      data() { return{
         CM: new CardMaker(),
         PB: new PointBuySystem("def"),
         Rolls: 0,
         Rolled: false,
+        strang:'<p>merp</p>',
+        fakedata:{},
         StatCardPool: [
           {High:"-",Low:"-",Points:"0",id:0}, 
         ],
@@ -150,18 +153,28 @@
         {label:"D&D 3.5 standard",ref:"DD35",id:101},
         {label:"Pathfinder, 1st edition",ref:"PF1E",id:101},
         ],*/
+        /*
         PointBuyMenu: {
         "def":{label:"One to one",ref:"def",id:100,helptext:
         'Points are equal to the straight dieroll.'},
         "DD35":{label:"D&D 3.5 standard",ref:"DD35",id:101,helptext:
         'Uses the point buy system from the D&D 3.5e DMG, page 169.\r\n Values less than 8 are worth minus points equal to the difference.'},
         "PF1E":{label:"Pathfinder, 1st edition",ref:"PF1E",id:101,helptext:
-        'Uses the method found at https://www.d20pfsrd.com/basics-ability-scores/ability-scores/ Smaller attributes are calculated using the same pattern (point value change is the same as the attribute modifier.'},
-        },    
+        'Uses the method found at https://www.d20pfsrd.com/basics-ability-scores/ability-scores/ Smaller attributes are calculated using the same pattern (point value change is the same as the attribute modifier.)'},
+        }, */
+        PointBuyMenu: {
+        "def":{label:"One to one",ref:"def",id:100,helptext:
+        '<p>Points are equal to the straight dieroll.</p>'},
+        "DD35":{label:"D&D 3.5 standard",ref:"DD35",id:101,helptext:
+        '<p>Uses the point buy system from the D&D 3.5e DMG, page 169.<br/><br/>Values less than 8 are worth minus points equal to the difference.</p>'},
+        "PF1E":{label:"Pathfinder, 1st edition",ref:"PF1E",id:101,helptext:
+        '<p>Uses the method found <a href="https://www.d20pfsrd.com/basics-ability-scores/ability-scores/" target="_blank">here</a>. Smaller attributes are calculated using the same pattern (point value change is the same as the attribute modifier.)</p>'},
+        }, 
+              
         showHelp:{
           PointBuy:false,
         }
-      },
+      }},
       methods: {
         Roll: function() {
           this.Rolls = this.CM.RollPool();
