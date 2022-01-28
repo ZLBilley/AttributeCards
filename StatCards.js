@@ -42,16 +42,28 @@ class CardPool {
         return this.CardList;
     }
     
-    Deal(){
+    Deal(PB){
         //"deals" attribute pairs as a list of objects
         // objects have high, low, and value
         var PairPool = [];
         for (let i = 0; i<this.Highs.length; i++) {
-            PairPool.push({
-                "High":this.Highs[i],
-                "Low":this.Lows[i],
-                "id":i
-            });
+            if(typeof PB !== "undefined"){
+                PairPool.push({
+                    "High":this.Highs[i],
+                    "Low":this.Lows[i],
+                    "Points":( 
+                        PB.GetPoints(this.Highs[i]) + 
+                        PB.GetPoints(this.Lows[i]) 
+                    ),
+                    "id":i
+                });
+            } else {
+                PairPool.push({
+                    "High":this.Highs[i],
+                    "Low":this.Lows[i],
+                    "id":i
+                });
+            }
         }
         return PairPool;
     }
@@ -120,6 +132,15 @@ class PointBuySystem {
             case "DD35":return this.DD35(n);
             break;
 
+            case "PF1E":return this.PF1E(n);
+            break;
+
+            case "PF1E_f":return this.PF1E_no_interp(n);
+            break;
+
+            case "PF1E_alt":return this.PF1E_linear_negative(n);
+            break;
+
             default:return n;
         }
     }
@@ -138,6 +159,74 @@ class PointBuySystem {
             return AttrList[n]
         }
 
+    }
+
+    //Pathfinder 1e
+    PF1E(n) {
+        let AttrList = {
+            3:-16,
+            4:-12,
+            5:-9,
+            6:-6,
+            7:-4,
+            8:-2,
+            9:-1,
+            10:0,
+            11:1,
+            12:2,
+            13:3,
+            14:5,
+            15:7,
+            16:10,
+            17:13,
+            18:17
+        }
+        return AttrList[n]
+    }
+
+    PF1E_no_interp(n) {
+        let AttrList = {
+            3:-4,
+            4:-4,
+            5:-4,
+            6:-4,
+            7:-4,
+            8:-2,
+            9:-1,
+            10:0,
+            11:1,
+            12:2,
+            13:3,
+            14:5,
+            15:7,
+            16:10,
+            17:13,
+            18:17
+        }
+        return AttrList[n]
+    }
+
+
+    PF1E_linear_negative(n) {
+        let AttrList = {
+            3:-8,
+            4:-7,
+            5:-6,
+            6:-5,
+            7:-4,
+            8:-2,
+            9:-1,
+            10:0,
+            11:1,
+            12:2,
+            13:3,
+            14:5,
+            15:7,
+            16:10,
+            17:13,
+            18:17
+        }
+        return AttrList[n]
     }
 
 }

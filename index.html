@@ -15,6 +15,35 @@
 <body>
 
   <div id="app-dealer">
+
+    <!--
+      Couldn't get the component templates working as options
+    <div id="cardlistoptions">
+      Point Buy type
+      <select name="select_PBType">
+        <option-pointbuys
+          class = "option"
+          v-for="item in PointBuyMenu"
+          v-bind:pboption="item"
+          v-bind:key="item.id"
+        >
+        </option-pointbuys>
+        <option>Grawk,</option>
+      </select>
+      ?
+    </div>
+    -->
+
+    <div id="cardlistoptions">
+      Point Buy type
+      <select name="select_PBType" @change="onSelect_PBMenu($event)">
+        <option value="">One-to-one</option>
+        <option value="DD35">D&D 3.5 standard</option>
+        <option value="PF1E">Pathfinder, 1st edition</option>
+      </select>
+      ?
+    </div>
+
     <button v-on:click="Roll">Roll your attribute cards!</button>
     <!--<ol>
       <statcard-card
@@ -39,6 +68,8 @@
     </div>
   </div>
 
+
+
   <script>
 
     Vue.component('statcard-card', {
@@ -51,21 +82,45 @@
       template: '<p class="imagecard"><table><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</p>'
     })
 
+    Vue.component('option-pointbuys', {
+      props: ['pboption'],
+      //template: '<option value="{{ pboption.ref }}"> hmm {{ pboption.label }} </option>'
+      //template: '<option value:"pboption.ref"> hmm {{ pboption.label }} </option>'
+      template: '<div> {{ pboption.label }} </div>'
+    })
+    
+    Vue.component('help-display', {
+      props: ['help'],
+      template:'<div> {{ help.text }} <.div}'
+    })
+
     var appdealer = new Vue({
       el: '#app-dealer',
       data: {
         CM: new CardMaker(),
+        PB: new PointBuySystem(),
         Rolls: 0,
         Rolled: false,
         StatCardPool: [
           {High:"-",Low:"-",Points:"0",id:0}, 
-        ]
+        ],
+        //currently broken
+        PointBuyMenu: [
+        {label:"one to one",ref:"",id:100},
+        {label:"D&D 3.5 standard",ref:"DD35",id:101},
+        ],
       },
       methods: {
         Roll: function() {
           this.Rolls = this.CM.RollPool();
-          this.StatCardPool = this.Rolls.Deal();
+          this.StatCardPool = this.Rolls.Deal(this.PB);
           this.Rolled = true;
+        },
+        onSelect_PBMenu: function(s) {
+          this.PB.SetSystem(s.target.value);
+          if(this.Rolled) {
+            this.StatCardPool = this.Rolls.Deal(this.PB);
+          }
         }
       }
     })
