@@ -5,10 +5,13 @@
 //Deal history
 //Types of draft
 class Draft {
+
 	constructor(Cards, PlayerCount){
 		this.Players = [];
 		this.Cards = Cards;
-		if(typeof Type !== "undefined"){
+		this.ActivePlayerIndex = null;
+
+		if(typeof PlayerCount !== "undefined"){
 
 			for(let i=0; i<PlayerCount; i++){
 				this.AddPlayer();
@@ -28,12 +31,48 @@ class Draft {
 	}
 
 	StartDraft(){
-		this.DraftStarted = true;
+		if(this.Players.length > 0){
+			this.DraftStarted = true;
+		}
 	}
 
 	PlayerCount(){
 		return this.Players.length;
 	}
+
+	DealCard(Index){
+		return this.Cards.splice(Index)
+
+	}
+
+	CardSelection(PlayerIndex){
+		switch(this.DraftType){
+			default:return CardSelectionDefault(PlayerIndex);
+		}
+	}
+
+	CardSelectionDefault(PlayerIndex){
+		let Indexing = [...Array(this.Cards.length).keys()];
+		return [this.Cards, Indexing];
+	}
+
+	AdvanceTurn(){
+		switch(this.DraftType){
+			default:return AdvanceTurnDefault(PlayerIndex);
+		}
+	}
+
+	AdvanceTurnDefault(){
+		if (this.ActivePlayerIndex === null){
+			this.ActivePlayerIndex = 0;
+		} else {
+			this.ActivePlayerIndex = (this.ActivePlayerIndex + 1) % this.Players.length;
+		}
+	}
+}
+
+class Hand {
+
 }
 
 //methods
@@ -51,6 +90,9 @@ class Player {
 
 	AddCard(Card){
 		this.Cards.push(Card);
+	}
+	TakeCard(){
+		return this.Cards.pop();
 	}
 }
 
