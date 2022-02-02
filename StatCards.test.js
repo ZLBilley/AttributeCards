@@ -1,5 +1,5 @@
 const Stats = require('./StatCards');
-const StandardStatSpread = [...Array(16).keys()].map(l => l+2)
+const StandardStatSpread = [...Array(16).keys()].map(l => l+2) //Gives the numbers 3-18 (possible rolls for D&D stats)
 
 
 //PointBuy testing

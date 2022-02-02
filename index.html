@@ -68,42 +68,53 @@
       ?
     </div>
     -->
+    <div id="page_roll" v-if="Drafting === false">
 
-    <div id="cardlistoptions">
-      Point Buy type
-      <select name="select_PBType" @change="onSelect_PBMenu($event)">
-        <option value="def">One-to-one</option>
-        <option value="DD35">D&D 3.5 standard</option>
-        <option value="PF1E">Pathfinder, 1st edition</option>
-        <option value="PF1E_f">Pathfinder, 1st edition (strict)</option>
-      </select>
+      <div id="cardlistoptions">
 
-      <button id="show-help" @click="showHelp.PointBuy = true">?</button>
-      <help-popup v-if="showHelp.PointBuy" @close="showHelp.PointBuy = false" name="helpPopupPointBuy">
-        <h3 slot="header">{{ PointBuyMenu[PB.PBType].label }}</h3>
-        <!--<div slot="body">{{ PointBuyMenu[PB.PBType].helptext }}</div>-->
-        <component slot="body" :is="PointBuyMenu[PB.PBType].helptext && {template:PointBuyMenu[PB.PBType].helptext, data: function() { return {} }}"></component>
-      </help-popup>
+        Point Buy type
+        <select name="select_PBType" @change="onSelect_PBMenu($event)">
+          <option value="def">One-to-one</option>
+          <option value="DD35">D&D 3.5 standard</option>
+          <option value="PF1E">Pathfinder, 1st edition</option>
+          <option value="PF1E_f">Pathfinder, 1st edition (strict)</option>
+        </select>
+
+        <button id="show-help" @click="showHelp.PointBuy = true">?</button>
+        <help-popup v-if="showHelp.PointBuy" @close="showHelp.PointBuy = false" name="helpPopupPointBuy">
+          <h3 slot="header">{{ PointBuyMenu[PB.PBType].label }}</h3>
+          <!--<div slot="body">{{ PointBuyMenu[PB.PBType].helptext }}</div>-->
+          <component slot="body" :is="PointBuyMenu[PB.PBType].helptext && {template:PointBuyMenu[PB.PBType].helptext, data: function() { return {} }}"></component>
+        </help-popup>
+      </div>
+
+      <button v-on:click="Roll">Roll your attribute cards!</button>
+
+      <div class="cardlist_initial">
+        <statcard-imagecard
+            class="card"
+            v-for="item in StatCardPool"
+            v-bind:statcard="item"
+            v-bind:key="item.id"
+        ></statcard-imagecard>
+
+      </div>
+
+      <div v-if="Rolled">
+        <button @click="Drafting = true">Accept and draft!</button>
+      </div>
+
     </div>
 
-    <button v-on:click="Roll">Roll your attribute cards!</button>
+    <div id="page_draft" v-if="Drafting">
+      Draft picking not fully implemented yet.
+      <button @click="Drafting = false">Back</button>
 
-    <div class="cardlist_initial">
-      <statcard-imagecard
-          class="card"
-          v-for="item in StatCardPool"
-          v-bind:statcard="item"
-          v-bind:key="item.id"
-      ></statcard-imagecard>
 
-    </div>
-
-    <div v-if="Rolled">
-      <button>Accept and draft!</button>
     </div>
   </div>
 
-
+  
 
   <script>
 
@@ -136,6 +147,7 @@
         PB: new PointBuySystem("def"),
         Rolls: 0,
         Rolled: false,
+        Drafting: false,
         StatCardPool: [
           {High:"-",Low:"-",Points:"0",id:0}, 
         ],
