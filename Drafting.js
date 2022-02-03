@@ -8,7 +8,11 @@ class Draft {
 
 	constructor(Cards, PlayerCount){
 		this.Players = [];
-		this.Cards = Cards;
+
+		if(typeof Cards !== "undefined"){
+			this.Cards = Cards.map((x)=>x); //Should create a copy of Cards
+		}
+
 		this.ActivePlayerIndex = null;
 
 		if(typeof PlayerCount !== "undefined"){
@@ -33,6 +37,17 @@ class Draft {
 	StartDraft(){
 		if(this.Players.length > 0){
 			this.DraftStarted = true;
+			this.AdvanceTurn();
+		}
+	}
+
+	IsFinished(){
+		return (this.Cards.length < 1); 
+	}
+
+	SetDraftType(DraftType){
+		if(this.DraftStarted = false) {
+			this.DraftType = DraftType;
 		}
 	}
 
@@ -41,13 +56,13 @@ class Draft {
 	}
 
 	DealCard(Index){
-		return this.Cards.splice(Index)
+		return this.Cards.splice(Index,1)[0]
 
 	}
 
 	CardSelection(PlayerIndex){
 		switch(this.DraftType){
-			default:return CardSelectionDefault(PlayerIndex);
+			default:return this.CardSelectionDefaul(PlayerIndex);
 		}
 	}
 
@@ -58,7 +73,7 @@ class Draft {
 
 	AdvanceTurn(){
 		switch(this.DraftType){
-			default:return AdvanceTurnDefault(PlayerIndex);
+			default:return this.AdvanceTurnDefault();
 		}
 	}
 
@@ -69,6 +84,24 @@ class Draft {
 			this.ActivePlayerIndex = (this.ActivePlayerIndex + 1) % this.Players.length;
 		}
 	}
+
+	PlayerPicksCard(Player,Card){
+		if(this.DraftStarted) {
+			switch(this.DraftType) {
+				default:return this.PlayerPicksCardDefault(Player,Card);
+			}
+		}
+	}
+
+	PlayerPicksCardDefault(Player,Card){
+		if(Player == this.ActivePlayerIndex) {
+			this.AdvanceTurn();
+			return this.DealCard(Card);
+		}
+
+	}
+
+
 }
 
 class Hand {

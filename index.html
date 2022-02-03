@@ -11,7 +11,7 @@
   <script src="https://unpkg.com/vue@2"></script>
   <script type="text/javascript" src="DiceFunctions.js"></script>
   <script type="text/javascript" src="StatCards.js"></script>
-
+  <script type="text/javascript" src="Drafting.js"></script>
 
     <script type="text/x-template" id="help-template">
      <transition name="modal">
@@ -43,6 +43,15 @@
           </div>
         </div>
       </transition>
+    </script>
+
+    <script type="text/x-template" id="draft-player">
+      <div class="draft-player-tableau">
+        <div class="draft-player-name">
+            {{ pc.Name }}
+            <input @change="pc.Name=$event.target.value" placeholder="">
+        </div>
+      </div>
     </script>
 
 </head>
@@ -101,7 +110,7 @@
       </div>
 
       <div v-if="Rolled">
-        <button @click="Drafting = true">Accept and draft!</button>
+        <button @click="onStart_Draft()">Accept and draft!</button>
       </div>
 
     </div>
@@ -109,7 +118,15 @@
     <div id="page_draft" v-if="Drafting">
       Draft picking not fully implemented yet.
       <button @click="Drafting = false">Back</button>
-
+      <div>
+        <draft-player
+          class="dpt-container"
+          v-for="p in Players"
+          v-bind:pc="p"
+          v-bind:key="p.id"
+          >
+          </draft-player> 
+      </div>
 
     </div>
   </div>
@@ -130,21 +147,27 @@
 
     Vue.component('option-pointbuys', {
       props: ['pboption'],
-      //template: '<option value="{{ pboption.ref }}"> hmm {{ pboption.label }} </option>'
-      //template: '<option value:"pboption.ref"> hmm {{ pboption.label }} </option>'
       template: '<div> {{ pboption.label }} </div>'
     })
     
     Vue.component("help-popup", {
       template: "#help-template"
-    });
+    })
 
+    
+    Vue.component("draft-player", {
+      props: ['pc'],
+      template:'#draft-player'
+    })
+    
 
     var appdealer = new Vue({
       el: '#app-dealer',
       data() { return{
         CM: new CardMaker(),
         PB: new PointBuySystem("def"),
+        Players: [],
+        Draft: {},
         Rolls: 0,
         Rolled: false,
         Drafting: false,
@@ -176,6 +199,15 @@
           this.PB.SetSystem(s.target.value);
           if(this.Rolled) {
             this.StatCardPool = this.Rolls.Deal(this.PB);
+          }
+        },
+        onStart_Draft: function() {
+          this.Drafting = true;
+          this.Draft = new Draft(this.StatCardPool,this.CM.PartySize);
+          this.Players = [];
+          for(let i = 0;i<this.CM.PartySize;i++){
+            this.Players.push(new Player());
+            this.Players.at(-1).id = "Player"+i;
           }
         }
       }
