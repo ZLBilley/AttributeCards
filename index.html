@@ -51,6 +51,8 @@
             <p> {{ pc.Name }} <span class="helper-text" @click="editName = !editName">EDIT</span></p>
             <p>&#20<input @change="EditNameConfirm($event.target.value)" placeholder="Rename" v-if="editName"></p>
         </div>
+        <div class="draft-player-card-selection">
+        </div>
       </div>
     </script>
 
@@ -214,11 +216,11 @@
         onStart_Draft: function() {
           this.Drafting = true;
           this.Draft = new Draft(this.StatCardPool,this.CM.PartySize);
-          this.Players = [];
-          for(let i = 0;i<this.CM.PartySize;i++){
-            this.Players.push(new Player());
-            this.Players.at(-1).id = "Player"+i;
-          }
+          this.Players = this.Draft.Players;
+          //for(let i = 0;i<this.CM.PartySize;i++){
+          //  this.Players.push(new Player());
+          //  this.Players.at(-1).id = "Player"+i;
+          //}
         }
       }
     })
