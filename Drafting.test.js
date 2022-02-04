@@ -13,7 +13,7 @@ test('Does adding a card work?',
 	() =>{
 
 	let D = new Draft.Player();
-	D.AddCard([1,2]);
+	D.TakeCard([1,2]);
 	expect( 
 			D.Cards[0]
 		).toStrictEqual([1,2])
@@ -25,9 +25,9 @@ test('Does taking a card return the card?',
 	() =>{
 
 	let D = new Draft.Player();
-	D.AddCard([1,2]);
+	D.TakeCard([1,2]);
 	expect( 
-			D.TakeCard()
+			D.GiveCard()
 		).toStrictEqual([1,2])
 	expect( 
 			D.Cards
@@ -39,8 +39,8 @@ test('Does taking the last card leave the list empty?',
 	() =>{
 
 	let D = new Draft.Player();
-	D.AddCard([1,2]);
-	D.TakeCard();
+	D.TakeCard([1,2]);
+	D.GiveCard();
 	expect( 
 			D.Cards
 		).toStrictEqual([])
@@ -177,3 +177,30 @@ test('Are the remaining cards correct after dealing?',
 		).toStrictEqual([[1,2],[5,-1]])
 	}
 );
+
+
+test('Is the active player getting a card selection by default?', 
+	() =>{
+
+	let D = new Draft.Draft(TestCardList,2);
+	D.StartDraft();
+	expect( 
+			D.CardSelection(1)
+		).toStrictEqual([])
+	}
+);
+
+test.each(
+		[1,2,3]
+	)
+	(
+		"Checking nonactive player %i gets no cards to choose.",
+		(a) => {
+			let D = new Draft.Draft(TestCardList,4);			
+			D.StartDraft();
+			expect(
+				D.CardSelection(a)
+			).toStrictEqual([])
+		}
+
+	)

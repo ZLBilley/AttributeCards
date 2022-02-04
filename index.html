@@ -52,12 +52,13 @@
             <p>&#20<input @change="EditNameConfirm($event.target.value)" placeholder="Rename" v-if="editName"></p>
         </div>
         <div class="draft-player-card-selection">
+          {{pc.id}} {{draft.ActivePlayerIndex}}
           <statcard-imagecard
               class="card"
               v-for="item in draft.CardSelection(pc.id)"
               v-bind:statcard="item"
               v-bind:ownerid="pc.id"
-              v-bind:cardfunction="()=>{draft.PlayerPicksCard(pc.id,item.id)}"
+              v-bind:cardfunction="()=>{pc.TakeCard(draft.PlayerPicksCard(pc.id,item.id))}"
               v-bind:key="item.id"
           ></statcard-imagecard>          
         </div>
@@ -139,7 +140,7 @@
         </draft-player> 
         
       </div>
-      Footer
+      Footer <button @click="Draft.AdvanceTurn()">Advance Turn</button>
     </div>
   </div>
 
@@ -153,7 +154,7 @@
     })
 
     Vue.component('statcard-imagecard', {
-      props: ['statcard','cardfunction','ownerid'],
+      props: ['statcard','cardfunction','ownerid'], //onnerid may be unnecessary, separate later?
       template: '<p class="imagecard" @click="onclickfunction()"><table><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</p>',
       methods: {
         onclickfunction(a) {

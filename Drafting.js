@@ -67,10 +67,14 @@ class Draft {
 	}
 
 	CardSelectionDefault(PlayerIndex){
-		for(let i = 0; i<this.Cards.length;i++){
-			this.Cards[i].id = i;
+		if(PlayerIndex == this.ActivePlayerIndex) {
+			for(let i = 0; i<this.Cards.length;i++){
+				this.Cards[i].id = i;
+			}
+			return this.Cards;
+		} else {
+			return [];
 		}
-		return this.Cards;
 	}
 
 	AdvanceTurn(){
@@ -124,10 +128,10 @@ class Player {
 		this.id = id;
 	}
 
-	AddCard(Card){
+	TakeCard(Card){
 		this.Cards.push(Card);
 	}
-	TakeCard(){
+	GiveCard(){
 		return this.Cards.pop();
 	}
 }
