@@ -47,3 +47,43 @@ table {
 	justify-content: center;
 	flex-wrap: wrap;
 }
+
+
+.page-draft{
+	/*width: 1100px;*/
+	background-color: lightseagreen;
+}
+
+.draft-player-card-area-container{
+	/*width: 1000px;*/
+	background-color: palevioletred;
+	width: 100%;
+	display:flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	flex-direction:row;
+}
+
+.draft-player-card-area{
+	background-color: indianred;
+}
+
+.draft-player-tableau{
+	color: #900;
+	border:  3px solid cadetblue;
+	background-color: powderblue;
+	width: 400px;
+	/*height:  120px;*/
+	flex-grow: 0;   
+	flex-shrink: 0;
+
+}
+
+.draft-player-name{
+	font-weight: bold;
+}
+
+.helper-text{
+	font-size: x-small;
+	font-weight: bolder;
+}

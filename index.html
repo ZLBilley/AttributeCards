@@ -48,8 +48,8 @@
     <script type="text/x-template" id="draft-player">
       <div class="draft-player-tableau">
         <div class="draft-player-name">
-            {{ pc.Name }}
-            <input @change="pc.Name=$event.target.value" placeholder="">
+            <p> {{ pc.Name }} <span class="helper-text" @click="editName = !editName">EDIT</span></p>
+            <p>&#20<input @change="EditNameConfirm($event.target.value)" placeholder="Rename" v-if="editName"></p>
         </div>
       </div>
     </script>
@@ -115,19 +115,20 @@
 
     </div>
 
-    <div id="page_draft" v-if="Drafting">
+    <div class="page-draft" v-if="Drafting">
       Draft picking not fully implemented yet.
       <button @click="Drafting = false">Back</button>
-      <div>
+      <div class="draft-player-card-area-container">
         <draft-player
-          class="dpt-container"
+          class="draft-player-card-area"
           v-for="p in Players"
           v-bind:pc="p"
           v-bind:key="p.id"
           >
-          </draft-player> 
+        </draft-player> 
+        
       </div>
-
+      Footer
     </div>
   </div>
 
@@ -157,6 +158,15 @@
     
     Vue.component("draft-player", {
       props: ['pc'],
+      data() {return {
+        editName:false,
+      }},
+      methods: {
+        EditNameConfirm(newName) {
+          this.pc.Name = newName;
+          this.editName = false;
+        }
+      },
       template:'#draft-player'
     })
     
