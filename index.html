@@ -52,6 +52,14 @@
             <p>&#20<input @change="EditNameConfirm($event.target.value)" placeholder="Rename" v-if="editName"></p>
         </div>
         <div class="draft-player-card-selection">
+          <statcard-imagecard
+              class="card"
+              v-for="item in draft.CardSelection(pc.id)"
+              v-bind:statcard="item"
+              v-bind:ownerid="pc.id"
+              v-bind:cardfunction="()=>{draft.PlayerPicksCard(pc.id,item.id)}"
+              v-bind:key="item.id"
+          ></statcard-imagecard>          
         </div>
       </div>
     </script>
@@ -125,7 +133,8 @@
           class="draft-player-card-area"
           v-for="p in Players"
           v-bind:pc="p"
-          v-bind:key="p.id"
+          v-bind:draft="Draft"
+          v-bind:key='"initialcard"+p.id'
           >
         </draft-player> 
         
@@ -144,8 +153,15 @@
     })
 
     Vue.component('statcard-imagecard', {
-      props: ['statcard'],
-      template: '<p class="imagecard"><table><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</p>'
+      props: ['statcard','cardfunction','ownerid'],
+      template: '<p class="imagecard" @click="onclickfunction()"><table><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</p>',
+      methods: {
+        onclickfunction(a) {
+          if(typeof this.cardfunction === "function"){
+            this.cardfunction();
+          }
+        }
+      }
     })
 
     Vue.component('option-pointbuys', {
@@ -159,7 +175,7 @@
 
     
     Vue.component("draft-player", {
-      props: ['pc'],
+      props: ['pc',"draft"],
       data() {return {
         editName:false,
       }},
@@ -217,10 +233,7 @@
           this.Drafting = true;
           this.Draft = new Draft(this.StatCardPool,this.CM.PartySize);
           this.Players = this.Draft.Players;
-          //for(let i = 0;i<this.CM.PartySize;i++){
-          //  this.Players.push(new Player());
-          //  this.Players.at(-1).id = "Player"+i;
-          //}
+
         }
       }
     })

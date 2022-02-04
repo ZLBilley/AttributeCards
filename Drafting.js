@@ -18,7 +18,7 @@ class Draft {
 		if(typeof PlayerCount !== "undefined"){
 
 			for(let i=0; i<PlayerCount; i++){
-				this.AddPlayer();
+				this.AddPlayer(i);
 			}
 		}
 
@@ -30,7 +30,7 @@ class Draft {
 		if(this.DraftStarted){
 			return;
 		} else{
-		this.Players.push(new Player());
+		this.Players.push(new Player(this.Players.length));
 		}
 	}
 
@@ -62,13 +62,15 @@ class Draft {
 
 	CardSelection(PlayerIndex){
 		switch(this.DraftType){
-			default:return this.CardSelectionDefaul(PlayerIndex);
+			default:return this.CardSelectionDefault(PlayerIndex);
 		}
 	}
 
 	CardSelectionDefault(PlayerIndex){
-		let Indexing = [...Array(this.Cards.length).keys()];
-		return [this.Cards, Indexing];
+		for(let i = 0; i<this.Cards.length;i++){
+			this.Cards[i].id = i;
+		}
+		return this.Cards;
 	}
 
 	AdvanceTurn(){
@@ -116,9 +118,10 @@ class Hand {
 //cards taken
 //attribute ranking?
 class Player {
-	constructor(){
+	constructor(id){
 		this.Cards = [];
 		this.Name = "New Player";
+		this.id = id;
 	}
 
 	AddCard(Card){
