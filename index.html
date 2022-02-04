@@ -45,23 +45,38 @@
       </transition>
     </script>
 
+    <!--id for the item id is index not id and does not produce a unique id - fix!-->
     <script type="text/x-template" id="draft-player">
       <div class="draft-player-tableau">
         <div class="draft-player-name">
             <p> {{ pc.Name }} <span class="helper-text" @click="editName = !editName">EDIT</span></p>
             <p>&#20<input @change="EditNameConfirm($event.target.value)" placeholder="Rename" v-if="editName"></p>
         </div>
+
+        <div class="draft-player-cards-picked">
+          Cards picked:
+          <statcard-imagecard
+              class="card"
+              v-for="item in pc.Cards"
+              v-bind:statcard="item"
+              v-bind:key='pc.id+"chosencard"+item.id'
+          ></statcard-imagecard>         
+        </div>
+
         <div class="draft-player-card-selection">
           {{pc.id}} {{draft.ActivePlayerIndex}}
-          <statcard-imagecard
+          <p v-if="draft.ActivePlayerIndex == pc.id">choose a card:</p>
+          <statcard-imagecard-clickable
               class="card"
               v-for="item in draft.CardSelection(pc.id)"
               v-bind:statcard="item"
-              v-bind:ownerid="pc.id"
-              v-bind:cardfunction="()=>{pc.TakeCard(draft.PlayerPicksCard(pc.id,item.id))}"
+              v-bind:draft="draft"
+              v-bind:owner="pc"
               v-bind:key="item.id"
-          ></statcard-imagecard>          
+          ></statcard-imagecard-clickable>          
         </div>
+
+
       </div>
     </script>
 
@@ -87,6 +102,8 @@
       </select>
       ?
     </div>
+
+                  v-bind:cardfunction="()=>{pc.TakeCard(draft.PlayerPicksCard(pc.id,item.id))}"
     -->
     <div id="page_roll" v-if="Drafting === false">
 
@@ -127,8 +144,8 @@
     </div>
 
     <div class="page-draft" v-if="Drafting">
-      Draft picking not fully implemented yet.
-      <button @click="Drafting = false">Back</button>
+      <button @click="Draft.StartDraft()">Begin</button>
+
       <div class="draft-player-card-area-container">
         <draft-player
           class="draft-player-card-area"
@@ -140,7 +157,8 @@
         </draft-player> 
         
       </div>
-      Footer <button @click="Draft.AdvanceTurn()">Advance Turn</button>
+      
+      <button @click="Drafting = false">Back</button>
     </div>
   </div>
 
@@ -154,13 +172,18 @@
     })
 
     Vue.component('statcard-imagecard', {
-      props: ['statcard','cardfunction','ownerid'], //onnerid may be unnecessary, separate later?
-      template: '<p class="imagecard" @click="onclickfunction()"><table><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</p>',
+      props: ['statcard'],
+      template: '<p class="imagecard"><table><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</p>',
+
+    })
+
+    Vue.component('statcard-imagecard-clickable', {
+      props: ['statcard','cardfunction','owner','draft'], //onnerid may be unnecessary, separate later?
+      template: '<p class="imagecard" @click="onclickfunction(statcard)"><table><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</p>',
       methods: {
-        onclickfunction(a) {
-          if(typeof this.cardfunction === "function"){
-            this.cardfunction();
-          }
+        onclickfunction(card) {
+          alert("Player "+this.owner.id+" clicked "+card.High+"/"+card.Low+" with id: "+card.id);
+          this.owner.TakeCard(this.draft.PlayerPicksCardDefault(this.owner.id,card.id));
         }
       }
     })

@@ -74,6 +74,8 @@ table {
 	background-color: powderblue;
 	width: 400px;
 	/*height:  120px;*/
+	flex-wrap: wrap;
+	flex-direction:column;
 	flex-grow: 0;   
 	flex-shrink: 0;
 
@@ -86,4 +88,14 @@ table {
 .helper-text{
 	font-size: x-small;
 	font-weight: bolder;
+}
+
+.draft-player-cards-picked {
+	flex-wrap: wrap;
+	flex-direction:column;
+}
+
+.draft-player-card-selection {
+	flex-wrap: wrap;
+	flex-direction:row;
 }
