@@ -49,7 +49,7 @@
     <script type="text/x-template" id="draft-player">
       <div class="draft-player-tableau">
         <div class="draft-player-name">
-            <p> {{ pc.Name }} <span class="helper-text" @click="editName = !editName">EDIT</span></p>
+            <p> {{ pc.Name }} <span class="helper-text" @click="editName = !editName">EDIT NAME</span></p>
             <p>&#20<input @change="EditNameConfirm($event.target.value)" placeholder="Rename" v-if="editName"></p>
         </div>
 
@@ -109,20 +109,39 @@
 
       <div id="cardlistoptions">
 
-        Point Buy type
-        <select name="select_PBType" @change="onSelect_PBMenu($event)">
-          <option value="def">One-to-one</option>
-          <option value="DD35">D&D 3.5 standard</option>
-          <option value="PF1E">Pathfinder, 1st edition</option>
-          <option value="PF1E_f">Pathfinder, 1st edition (strict)</option>
-        </select>
+        <div>
+          Number of players
+          <select name="select_PlayerCount" @change="onSelect_PlayerCountMenu($event.target.value)">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
 
-        <button id="show-help" @click="showHelp.PointBuy = true">?</button>
-        <help-popup v-if="showHelp.PointBuy" @close="showHelp.PointBuy = false" name="helpPopupPointBuy">
-          <h3 slot="header">{{ PointBuyMenu[PB.PBType].label }}</h3>
-          <!--<div slot="body">{{ PointBuyMenu[PB.PBType].helptext }}</div>-->
-          <component slot="body" :is="PointBuyMenu[PB.PBType].helptext && {template:PointBuyMenu[PB.PBType].helptext, data: function() { return {} }}"></component>
-        </help-popup>
+        </div>
+
+        <div>
+          Point Buy type
+          <select name="select_PBType" @change="onSelect_PBMenu($event)">
+            <option value="def">One-to-one</option>
+            <option value="DD35">D&D 3.5 standard</option>
+            <option value="PF1E">Pathfinder, 1st edition</option>
+            <option value="PF1E_f">Pathfinder, 1st edition (strict)</option>
+          </select>
+
+          <button id="show-help" @click="showHelp.PointBuy = true">?</button>
+          <help-popup v-if="showHelp.PointBuy" @close="showHelp.PointBuy = false" name="helpPopupPointBuy">
+            <h3 slot="header">{{ PointBuyMenu[PB.PBType].label }}</h3>
+            <!--<div slot="body">{{ PointBuyMenu[PB.PBType].helptext }}</div>-->
+            <component slot="body" :is="PointBuyMenu[PB.PBType].helptext && {template:PointBuyMenu[PB.PBType].helptext, data: function() { return {} }}"></component>
+          </help-popup>
+        </div>
       </div>
 
       <button v-on:click="Roll">Roll your attribute cards!</button>
@@ -144,7 +163,7 @@
     </div>
 
     <div class="page-draft" v-if="Drafting">
-      <button @click="Draft.StartDraft()">Begin</button>
+      <button @click="Draft.StartDraft()" v-if="Draft.DraftStarted == false">Begin</button>
 
       <div class="draft-player-card-area-container">
         <draft-player
@@ -178,11 +197,11 @@
     })
 
     Vue.component('statcard-imagecard-clickable', {
-      props: ['statcard','cardfunction','owner','draft'], //onnerid may be unnecessary, separate later?
+      props: ['statcard','cardfunction','owner','draft'], //ownerid may be unnecessary, separate later?
       template: '<p class="imagecard" @click="onclickfunction(statcard)"><table><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</p>',
       methods: {
         onclickfunction(card) {
-          alert("Player "+this.owner.id+" clicked "+card.High+"/"+card.Low+" with id: "+card.id);
+          //alert("Player "+this.owner.id+" clicked "+card.High+"/"+card.Low+" with id: "+card.id);
           this.owner.TakeCard(this.draft.PlayerPicksCardDefault(this.owner.id,card.id));
         }
       }
@@ -246,6 +265,13 @@
           this.Rolls = this.CM.RollPool();
           this.StatCardPool = this.Rolls.Deal(this.PB);
           this.Rolled = true;
+        },
+        onSelect_PlayerCountMenu: function(s) {
+          alert(s)
+          this.CM.PartySize = Number(s);
+          if(this.Rolled) {
+            this.StatCardPool = this.Rolls.Deal(this.PB);
+          }
         },
         onSelect_PBMenu: function(s) {
           this.PB.SetSystem(s.target.value);
