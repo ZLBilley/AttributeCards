@@ -5,6 +5,9 @@ function IntegerAscending(a, b) {
    return a-b;
 }
 
+const Dice = require('./DiceFunctions')
+const dl4d6 = Dice.dl4d6
+
 class CardPool {
     constructor(Rolls) {
         let N = Rolls.length/2;
@@ -113,6 +116,84 @@ class CardMaker {
             Rolls.push(this.Roll());
         }
         return new CardPool(Rolls);
+    }
+
+    RollPoolPointBuyRandom() {
+        let Rolls = this.RollPoolStd();
+        let maxIterations = 100;
+        let tolerance = 1.0;
+        let currentIterations = 0;
+
+        while(Math.abs(this.GetAveragePointValue(Rolls) - this.PointBuyPoints) > tolerance ) {
+            let  currentError = this.GetAveragePointValue(Rolls)-this.PointBuyPoints;
+            if(CurrentError > 0){
+                //remove lowest
+                //add new roll
+            } else {
+                //remove highest
+                //add new roll
+            }
+        }
+        return Rolls;
+    }
+
+    RollPoolPointBuyTweak() {
+
+        let Rolls = this.RollPoolStd();
+        Rolls.sort();
+        let tolerance = 1.0;
+        let currentError = this.GetAveragePointValue(Rolls)-this.PointBuyPoints ;
+
+        if(currentError > 0) {
+            while(currentError > 0) {
+                let i = 0;
+                while(currentError > 0 && i < Rolls.length) {
+                    if(Rolls[i]>3) {
+                        Rolls[i]-=1;
+                    }
+                    currentError = this.GetAveragePointValue(Rolls)-this.PointBuyPoints ;
+                    i++;
+                }
+            }
+        }
+        else {
+            Rolls.reverse(); //start from the highest rolls instead
+            while(currentError < 0) {
+                let i = 0;
+                while(currentError < 0 && i < Rolls.length) {
+                    if(Rolls[i]<18) {
+                        Rolls[i]+=1;
+                    }
+                    currentError = this.GetAveragePointValue(Rolls)-this.PointBuyPoints ;
+                    i++;
+                }
+            }            
+        }
+
+        return Rolls;
+    }
+
+
+    UsePointBuySystem(PointBuySystemType) {
+        if(PointBuySystemType == "None" || !PointBuySystemType) {
+            this.PointBuyConstraint = false;
+        } else {
+            this.PointBuyConstraint = new PointBuySystem(PointBuySystemType);
+        }
+    }
+
+    GetAveragePointValue(Rolls) {
+        let RollSum = 0;
+        if(this.PointBuyConstraint) {
+            for(let Roll of Rolls) {
+                RollSum += this.PointBuyConstraint.GetPoints(Roll);
+            }
+        } else {
+             for(let Roll of Rolls) {
+                RollSum += Roll;
+            }           
+        }
+        return RollSum/Rolls.length;
     }
             
 }
