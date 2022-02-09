@@ -126,6 +126,21 @@
 
         </div>
 
+        <div> 
+          <select name="select_RollType" @change="onSelect_RollTypeMenu($event.target.value)">
+            <option value="">4d6, drop lowest</option>
+          </select>
+        </div>
+
+        <div>
+          Tweak values to approximate point buy? 
+          <select name="select_Constraints" @change="onSelect_ConstraintMenu($event.target.value)">
+            <option value=0>No</option>
+            <option value=1>Yes</option>
+          </select>
+
+        </div>
+
         <div>
           Point Buy type
           <select name="select_PBType" @change="onSelect_PBMenu($event)">
@@ -279,6 +294,15 @@
             this.StatCardPool = this.Rolls.Deal(this.PB);
           }
         },
+         onSelect_ConstraintMenu: function(s) {
+          if(Number(s)) {
+            alert("I think you selected true");
+          }
+          else {
+            alert("I think you selected false")
+          }
+
+        },       
         onStart_Draft: function() {
           this.Drafting = true;
           this.Draft = new Draft(this.StatCardPool,this.CM.PartySize);

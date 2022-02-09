@@ -77,7 +77,6 @@ class CardMaker {
         this.Roll = dl4d6;
         this.PointBuyConstraint = false;
         this.PointBuyPoints = 25;
-        
         this.PartySize = 4;
         this.AttrsPerCharacter = 6;
         this.BonusRolls = 0;
@@ -137,7 +136,7 @@ class CardMaker {
         return Rolls;
     }
 
-    RollPoolPointBuyTweak(Rolls) {
+    RollPoolPointBuyTweak(PointBuySystemType,Rolls) {
 
         //no input is the standard use, specifying rolls is mainyl for testing purposes
         if(typeof Rolls != "object") {
@@ -146,7 +145,7 @@ class CardMaker {
 
         Rolls.sort(IntegerAscending);
         let tolerance = 1.0;
-        let currentError = this.GetAveragePointValue(Rolls)-this.PointBuyPoints ;
+        let currentError = this.GetAveragePointValue(Rolls,PointBuySystemType)-this.PointBuyPoints ;
 
         if(currentError > 0) {
             while(currentError > 0) {
@@ -155,7 +154,7 @@ class CardMaker {
                     if(Rolls[i]>3) {
                         Rolls[i]-=1;
                     }
-                    currentError = this.GetAveragePointValue(Rolls)-this.PointBuyPoints ;
+                    currentError = this.GetAveragePointValue(Rolls,PointBuySystemType)-this.PointBuyPoints ;
                     i++;
                 }
             }
@@ -168,7 +167,7 @@ class CardMaker {
                     if(Rolls[i]<18) {
                         Rolls[i]+=1;
                     }
-                    currentError = this.GetAveragePointValue(Rolls)-this.PointBuyPoints ;
+                    currentError = this.GetAveragePointValue(Rolls,PointBuySystemType)-this.PointBuyPoints ;
                     i++;
                 }
             }            
@@ -186,11 +185,11 @@ class CardMaker {
         }
     }
 
-    GetAveragePointValue(Rolls) {
+    GetAveragePointValue(Rolls,PointBuySystem) {
         let RollSum = 0;
-        if(this.PointBuyConstraint) {
+        if(typeof PointBuySystem == "object") {
             for(let Roll of Rolls) {
-                RollSum += this.PointBuyConstraint.GetPoints(Roll);
+                RollSum += PointBuySystem.GetPoints(Roll);
             }
         } else {
              for(let Roll of Rolls) {
