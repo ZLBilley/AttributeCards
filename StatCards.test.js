@@ -86,3 +86,68 @@ test('Make sure GetAveragePointValue accepts D&D 3.5 point buy system',
 		).toBeCloseTo(-1)
 	}
 );
+
+
+test('Make sure GetAveragePointValue accepts D&D 3.5 point buy system', 
+	() =>{
+	let s = new Stats.CardMaker();
+	s.UsePointBuySystem("DD35")
+	expect( 
+			s.GetAveragePointValue([8,7,6])
+		).toBeCloseTo(-1)
+	}
+);
+
+
+test('Does the point buy tweaker successfully tweak [5,6,7] down to [4,5,6] when it aims for an average of 5?', 
+	() =>{
+	let s = new Stats.CardMaker();
+	s.PointBuyPoints=5;
+	expect( 
+			s.RollPoolPointBuyTweak([5,6,7])
+		).toStrictEqual([4,5,6])
+	}
+);
+
+
+test('Does the point buy tweaker successfully tweak [3,4,5] up to [6,5,4] when it aims for an average of 5?', 
+	() =>{
+	let s = new Stats.CardMaker();
+	s.PointBuyPoints=5;
+	expect( 
+			s.RollPoolPointBuyTweak([3,4,5])
+		).toStrictEqual([6,5,4])
+	}
+);
+
+test('Does the point buy tweaker successfully tweak [6,6,7] down to [4,5,6] when it aims for an average of 5? Testing outer loop.', 
+	() =>{
+	let s = new Stats.CardMaker();
+	s.PointBuyPoints=5;
+	expect( 
+			s.RollPoolPointBuyTweak([6,6,7])
+		).toStrictEqual([4,5,6])
+	}
+);
+
+
+
+test('Does the point buy tweaker successfully tweak [5,5,7] down to [8,7,6] when it aims for an average of 7? Testing outer loop.', 
+	() =>{
+	let s = new Stats.CardMaker();
+	s.PointBuyPoints=7;
+	expect( 
+			s.RollPoolPointBuyTweak([5,5,6])
+		).toStrictEqual([8,7,6])
+	}
+);
+
+test('Does the point buy tweaker successfully tweak [18,12,6] down to [18,14,7] when it aims for an average of 13? Keeping it in bounds.', 
+	() =>{
+	let s = new Stats.CardMaker();
+	s.PointBuyPoints=13;
+	expect( 
+			s.RollPoolPointBuyTweak([18,12,6])
+		).toStrictEqual([18,14,7])
+	}
+);

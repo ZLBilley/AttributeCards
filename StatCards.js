@@ -5,8 +5,8 @@ function IntegerAscending(a, b) {
    return a-b;
 }
 
-const Dice = require('./DiceFunctions')
-const dl4d6 = Dice.dl4d6
+//const Dice = require('./DiceFunctions')
+//const dl4d6 = Dice.dl4d6
 
 class CardPool {
     constructor(Rolls) {
@@ -137,10 +137,14 @@ class CardMaker {
         return Rolls;
     }
 
-    RollPoolPointBuyTweak() {
+    RollPoolPointBuyTweak(Rolls) {
 
-        let Rolls = this.RollPoolStd();
-        Rolls.sort();
+        //no input is the standard use, specifying rolls is mainyl for testing purposes
+        if(typeof Rolls != "object") {
+            let Rolls = this.RollPoolStd();
+        }
+
+        Rolls.sort(IntegerAscending);
         let tolerance = 1.0;
         let currentError = this.GetAveragePointValue(Rolls)-this.PointBuyPoints ;
 
