@@ -52,9 +52,8 @@
             <p> {{ pc.Name }} <span class="helper-text" @click="editName = !editName">EDIT NAME</span></p>
             <p>&#20<input @change="EditNameConfirm($event.target.value)" placeholder="Rename" v-if="editName"></p>
         </div>
-
-        <div class="draft-player-cards-picked">
-          Cards picked:
+        <p>Cards picked:</p>
+        <div class="draft-player-cards-picked">     
           <statcard-imagecard
               class="card"
               v-for="item in pc.Cards"
@@ -62,10 +61,9 @@
               v-bind:key='pc.id+"chosencard"+item.id'
           ></statcard-imagecard>         
         </div>
-
+        <p v-if="draft.ActivePlayerIndex == pc.id">choose a card:</p>
         <div class="draft-player-card-selection">
-          {{pc.id}} {{draft.ActivePlayerIndex}}
-          <p v-if="draft.ActivePlayerIndex == pc.id">choose a card:</p>
+          {{pc.id}} {{draft.ActivePlayerIndex}}     
           <statcard-imagecard-clickable
               class="card"
               v-for="item in draft.CardSelection(pc.id)"
@@ -221,20 +219,20 @@
 
     Vue.component('statcard-imagecard', {
       props: ['statcard'],
-      template: '<p class="imagecard"><table><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</p>',
+      template: '<div class="imagecard"><table><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</div>',
 
     })
 
     Vue.component('statcard-imagecard-clickable', {
       props: ['statcard','cardfunction','owner','draft'], //ownerid may be unnecessary, separate later?
-      template: '<p class="imagecard" @click="onclickfunction(statcard)"><table><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</p>',
+      template: '<div class="imagecard" @click="onclickfunction(statcard)"><table class="imagecard-stats"><tr>{{ statcard.High }}</font></tr><tr>{{ statcard.Low }}</tr></table>Points: {{ statcard.Points}}</div>',
       methods: {
         onclickfunction(card) {
           //alert("Player "+this.owner.id+" clicked "+card.High+"/"+card.Low+" with id: "+card.id);
           this.owner.TakeCard(this.draft.PlayerPicksCardDefault(this.owner.id,card.id));
         }
       }
-    })
+    }) //is there a way to properly make this a child or something of previous?
 
     Vue.component('option-pointbuys', {
       props: ['pboption'],
