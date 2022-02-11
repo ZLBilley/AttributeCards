@@ -82,12 +82,11 @@ class CardMaker {
         this.BonusRolls = 0;
     }
     
-    RollPool() {
+    RollPool(PointBuySystem) {
         if(this.PointBuyConstraint) {
-            alert("This feature has not been implemented yet");
-            return;
+            return this.RollPoolPointBuyTweakCards(PointBuySystem);
         } else {
-            return this.RollPoolStd();
+            return this.RollPoolCards();
         }
     }
     
@@ -117,8 +116,12 @@ class CardMaker {
         return new CardPool(Rolls);
     }
 
+     RollPoolCards() {
+        return new CardPool(this.RollPoolBasic());
+    }   
+
     RollPoolPointBuyRandom() {
-        let Rolls = this.RollPoolStd();
+        let Rolls = this.RollPoolBasic();
         let maxIterations = 100;
         let tolerance = 1.0;
         let currentIterations = 0;
@@ -136,16 +139,25 @@ class CardMaker {
         return Rolls;
     }
 
+    RollPoolPointBuyTweakCards(PointBuySystemType) {
+        return new CardPool(this.RollPoolPointBuyTweak(PointBuySystemType));
+    }
+
     RollPoolPointBuyTweak(PointBuySystemType,Rolls) {
+
+        let iterations = 0;
+        let maxIterations = 500;
 
         //no input is the standard use, specifying rolls is mainyl for testing purposes
         if(typeof Rolls != "object") {
-            let Rolls = this.RollPoolStd();
+            var Rolls = this.RollPoolBasic();
         }
 
         Rolls.sort(IntegerAscending);
         let tolerance = 1.0;
-        let currentError = this.GetAveragePointValue(Rolls,PointBuySystemType)-this.PointBuyPoints ;
+        let currentError = this.GetAveragePointDifference(Rolls,PointBuySystemType);
+
+        //alert("the rolls" + Rolls + "Have been sorted with an error of "+currentError)
 
         if(currentError > 0) {
             while(currentError > 0) {
@@ -154,9 +166,12 @@ class CardMaker {
                     if(Rolls[i]>3) {
                         Rolls[i]-=1;
                     }
-                    currentError = this.GetAveragePointValue(Rolls,PointBuySystemType)-this.PointBuyPoints ;
+                    currentError = this.GetAveragePointDifference(Rolls,PointBuySystemType);
                     i++;
+                    iterations++;
+                    if(iterations>=maxIterations) {alert("You may have selected an inappropriate point buy value");break;}
                 }
+                if(iterations>=maxIterations) {alert("You may have selected an inappropriate point buy value");break;}
             }
         }
         else {
@@ -167,9 +182,12 @@ class CardMaker {
                     if(Rolls[i]<18) {
                         Rolls[i]+=1;
                     }
-                    currentError = this.GetAveragePointValue(Rolls,PointBuySystemType)-this.PointBuyPoints ;
+                    currentError = this.GetAveragePointDifference(Rolls,PointBuySystemType);
                     i++;
+                    iterations++;
+                    if(iterations>=maxIterations) {alert("You may have selected an inappropriate point buy value");break;}
                 }
+                if(iterations>=maxIterations) {alert("You may have selected an inappropriate point buy value");break;}
             }            
         }
 
@@ -197,6 +215,10 @@ class CardMaker {
             }           
         }
         return RollSum/Rolls.length;
+    }
+
+    GetAveragePointDifference(Rolls,PointBuySystemType) {
+        return this.GetAveragePointValue(Rolls,PointBuySystemType)-(this.PointBuyPoints/this.AttrsPerCharacter);
     }
             
 }

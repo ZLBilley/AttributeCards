@@ -127,8 +127,12 @@
         </div>
 
         <div> 
+          Diceroll method
           <select name="select_RollType" @change="onSelect_RollTypeMenu($event.target.value)">
-            <option value="">4d6, drop lowest</option>
+            <option value="dl4d6">4d6, drop lowest</option>
+            <option value="r3d6">3d6</option>
+            <option value="r2d6p6">2d6+6</option>
+            <option value="dl5d6">5d6, drop lowest</option>
           </select>
         </div>
 
@@ -139,13 +143,18 @@
             <option value=1>Yes</option>
           </select>
 
+          <input type="number" 
+            name="inputPointBuyPoints" 
+            v-if="CM.PointBuyConstraint" 
+            value=25 
+            @change="onInput_PointBuyPoints($event.target.value)">
         </div>
 
         <div>
           Point Buy type
-          <select name="select_PBType" @change="onSelect_PBMenu($event)">
+          <select name="select_PBType" @change="onSelect_PBMenu($event.target.value)">
             <option value="def">One-to-one</option>
-            <option value="DD35">D&D 3.5 standard</option>
+            <option value="DD35" selected>D&D 3.5 standard</option>
             <option value="PF1E">Pathfinder, 1st edition</option>
             <option value="PF1E_f">Pathfinder, 1st edition (strict)</option>
           </select>
@@ -172,7 +181,12 @@
       </div>
 
       <div v-if="Rolled">
-        <button @click="onStart_Draft()">Accept and draft!</button>
+        <p>
+          With these cards, the average character will have the equivalent of a {{ GetPointAverage() }} point buy.
+        </p>
+        <p>
+          <button @click="onStart_Draft()">Accept and draft!</button>        
+        </p>
       </div>
 
     </div>
@@ -257,6 +271,7 @@
         Rolls: 0,
         Rolled: false,
         Drafting: false,
+        smallNum: new Intl.NumberFormat('en-US',{maximumFractionDigits:1}),
         StatCardPool: [
           {High:"-",Low:"-",Points:"0",id:0}, 
         ],
@@ -277,38 +292,57 @@
       }},
       methods: {
         Roll: function() {
-          this.Rolls = this.CM.RollPool();
+          this.Rolls = this.CM.RollPool(this.PB);
           this.StatCardPool = this.Rolls.Deal(this.PB);
           this.Rolled = true;
         },
+        GetPointAverage: function() {
+          let total = 0;
+          let cardcount = 0;
+          for(let card of this.StatCardPool) {
+            total += card.Points;
+            cardcount++;
+          }
+
+          return this.smallNum.format( (total/cardcount)*(this.CM.AttrsPerCharacter/2) );
+        },
         onSelect_PlayerCountMenu: function(s) {
-          alert(s)
+          //alert(s)
           this.CM.PartySize = Number(s);
           if(this.Rolled) {
             this.StatCardPool = this.Rolls.Deal(this.PB);
           }
         },
         onSelect_PBMenu: function(s) {
-          this.PB.SetSystem(s.target.value);
+          this.PB.SetSystem(s);
           if(this.Rolled) {
             this.StatCardPool = this.Rolls.Deal(this.PB);
           }
         },
-         onSelect_ConstraintMenu: function(s) {
+        onSelect_ConstraintMenu: function(s) {
           if(Number(s)) {
-            alert("I think you selected true");
+            this.CM.PointBuyConstraint = true;
           }
           else {
-            alert("I think you selected false")
+            this.CM.PointBuyConstraint = false;
           }
-
-        },       
+        },
+        onSelect_RollTypeMenu: function(s) {
+          this.CM.Roll = RollMethod(s);
+        },
+        onInput_PointBuyPoints: function (n) {
+          this.CM.PointBuyPoints = n;
+        },
         onStart_Draft: function() {
           this.Drafting = true;
           this.Draft = new Draft(this.StatCardPool,this.CM.PartySize);
           this.Players = this.Draft.Players;
 
         }
+      },
+      mounted() {
+        //Want to change the default point buy to D&D 3.5
+        this.onSelect_PBMenu("DD35");
       }
     })
   </script>
