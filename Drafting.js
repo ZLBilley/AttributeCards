@@ -110,21 +110,11 @@ class Draft {
 
 }
 
-class Hand {
 
-}
-
-//methods
-// add player
-// player take card?
-
-//Player
-//cards taken
-//attribute ranking?
 class Player {
 	constructor(id){
 		this.Cards = [];
-		this.Name = "New Player";
+		this.Name = "Player "+(id+1);
 		this.id = id;
 	}
 

@@ -132,10 +132,19 @@
             <option value="r2d6p6">2d6+6</option>
             <option value="dl5d6">5d6, drop lowest</option>
           </select>
+          <button id="show-help-rollmethod" @click="showHelp.RollMethod = true">?</button>
+          <help-popup v-if="showHelp.RollMethod" @close="showHelp.RollMethod = false" name="helpPopupRollMethod">
+            <h3 slot="header">Rolling Methods</h3>
+            <div slot="body">
+              <p>{{ RollMenu[DiceRollMethodLabel].helptext }}</p>
+              <p>{{ RollMenu[DiceRollMethodLabel].helptext2 }}</p> 
+            </div>
+          </help-popup>
+
         </div>
 
         <div>
-          Tweak values to approximate point buy? 
+          Force a point buy target? 
           <select name="select_Constraints" @change="onSelect_ConstraintMenu($event.target.value)">
             <option value=0>No</option>
             <option value=1>Yes</option>
@@ -146,6 +155,16 @@
             v-if="CM.PointBuyConstraint" 
             value=25 
             @change="onInput_PointBuyPoints($event.target.value)">
+
+          <button id="show-help-pointbuy-clamp" @click="showHelp.ClampPointBuy = true">?</button>
+          <help-popup v-if="showHelp.ClampPointBuy" @close="showHelp.ClampPointBuy = false" name="helpPopupPointBuyClamp">
+            <h3 slot="header">Selecting a point-buy target</h3>
+            <div slot="body">
+              <p>This control lets you choose an average point-buy equivalent for your card set. The dice are rolled as usual, and then one by one, each roll is increased or decreased by 1, if possible, until the desired point buy is reached. (The point buy value is one character's worth of rolls. For D&D/Pathfinder, this is  6 scores, or 3 cards.)</p>
+
+              <p>There is a preference for higher maximum scores. If the roll needs to be lowered, smaller numbers are subtracted from first, if possible. If the roll needs to be raised, higher numbers are added to first, if possible.</p>
+            </div>
+          </help-popup>
         </div>
 
         <div>
@@ -269,6 +288,7 @@
         Rolls: 0,
         Rolled: false,
         Drafting: false,
+        DiceRollMethodLabel: "dl4d6", //kinda kludgy, for help menu functionality
         smallNum: new Intl.NumberFormat('en-US',{maximumFractionDigits:1}),
         StatCardPool: [
           {High:"-",Low:"-",Points:"0",id:0}, 
@@ -283,9 +303,24 @@
         "PF1E_f":{label:"Pathfinder, 1st edition (strict)",ref:"PF1E",id:103,helptext:
         '<p>Uses the method found <a href="https://www.d20pfsrd.com/basics-ability-scores/ability-scores/" target="_blank">here</a>. Attributes smaller than 7 are worth the same as 7. This keeps low scores from cancelling out high ones too much.</p>'},
         }, 
-              
+        RollMenu: {
+        "dl4d6":{label:"4d6, drop lowest",ref:"dl4d6",id:"rollmenu_0",
+        helptext:'Each ability score is determined by rolling 4 six sided dice and keeping the highest three, generating a number between 3 and 18.',
+        helptext2:'This is the standard rollign method for D&D.'},
+        "r3d6":{label:"3d6",ref:"r3d6",id:"rollmenu_1",
+        helptext:'Each ability score is determined by rolling 3 six sided dice, generating a number between 3 and 18.',  
+        helptext2:""},      
+        "r2d6p6":{label:"2d6 + 6",ref:"r3d6",id:"rollmenu_2",
+        helptext:'Each ability score is determined by rolling 2 six sided dice and addign six, generating a number between 8 and 18.',
+        helptext2:'This results in more "average" characters with lower scores instead of heroic characters as is standard.</p>'}, 
+        "dl5d6":{label:"5d6, drop lowest",ref:"r3d6",id:"rollmenu_3",
+        helptext:'Each ability score is determined by rolling 5 six sided dice and keeping the highest three, generating a number between 3 and 18.',
+        helptext2:'This typically results in more powerful characters'},
+        },
         showHelp:{
           PointBuy:false,
+          ClampPointBuy:false,
+          RollMethod: false,
         }
       }},
       methods: {
@@ -327,6 +362,7 @@
         },
         onSelect_RollTypeMenu: function(s) {
           this.CM.Roll = RollMethod(s);
+          this.DiceRollMethodLabel = s;
         },
         onInput_PointBuyPoints: function (n) {
           this.CM.PointBuyPoints = n;
