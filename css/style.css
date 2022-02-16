@@ -23,6 +23,17 @@ table {
 	margin: 0 auto;
 }
 
+.title-block {
+	display: flex;
+	flex-direction:row;
+	align-items: center;
+	width: 70vw;
+	/*margin: 10px;*/
+	padding:  0px 10px;
+	border-radius: 2px;
+	background-color: #ddd;
+}
+
 .card {
 	text-align: center;	
 	font-family:'Lucida Handwriting', 'Monotype Corsiva', Zapfino, 'URW Chancery L', 'Courier New', Courier, monospace;
@@ -46,7 +57,7 @@ table {
 
 .cardlist_initial{
 	display:flex;
-	width: 90%;
+	width: 70%;
 	justify-content: center;
 	flex-wrap: wrap;
 }

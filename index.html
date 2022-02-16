@@ -17,9 +17,12 @@
      <transition name="modal">
         <div class="popup-mask">
           <div class="help-wrapper">
-            <div class="help-container">
+            <div class="help-container" :style="widthoverride">
 
               <div class="help-header">
+                <button class="help-default-close" @click="$emit('close')">
+                    X
+                </button>
                 <slot name="header">
                   Help?
                 </slot>
@@ -30,20 +33,13 @@
                   No help is available
                 </slot>
               </div>
-
-              <div class="help-footer">
-                <slot name="footer">
-                  &#20
-                  <button class="help-default-close" @click="$emit('close')">
-                    Close
-                  </button>
-                </slot>
-              </div>
             </div>
           </div>
         </div>
       </transition>
     </script>
+
+
 
     <!--id for the item id is index not id and does not produce a unique id - fix!-->
     <script type="text/x-template" id="draft-player">
@@ -83,26 +79,43 @@
 <body>
 
   <div id="app-dealer">
+    <div class="title-block">
+      <div style="flex-grow:3">
+        <h1>The Tavern You Meet In</h1>
+      </div>
+      <div style="flex-grow:1">
+          <button id="show-help-app" @click="showHelp.App = true">?</button>
+          <help-popup 
+          v-bind:widthoverride="MainHelpStyle"
+          v-if="showHelp.App" 
+          @close="showHelp.App = false" 
+          name="helpPopupApp">
+            <h3 slot="header">About this App</h3>
+            <div slot="body" class="help-scroll">
 
-    <!--
-      Couldn't get the component templates working as options
-    <div id="cardlistoptions">
-      Point Buy type
-      <select name="select_PBType">
-        <option-pointbuys
-          class = "option"
-          v-for="item in PointBuyMenu"
-          v-bind:pboption="item"
-          v-bind:key="item.id"
-        >
-        </option-pointbuys>
-        <option>Grawk,</option>
-      </select>
-      ?
+            <p>This app generates ability scores for a party of characters for tabletop role-playing games such as Dungeons and Dragons.</p> 
+
+            <p>It generates a pool of cards by "rolling" ability scores, just like you would when making characters, and then groups rolls into pairs for each card. There is also the option to replicate point buy systems by automatically adjusting the results to match a certain value.</p> 
+
+            <p>Once the cards are generated, the players take turns choosing cards until everyone has enough attribute scores for their character.</p>  
+
+            <p><h3>The reason behind it</h3></p>
+
+            <p>The traditional method for coming up with character stats in tabletop RPGs is to have everyone roll dice for their own character. This is good! Rolling dice is fun! But one person can end up with much better abilities than another, and if you're planning to play a long running campaign that may last months or years, it can feel unfair and detract from the fun.</p>
+
+            <p>Often times, the solution is to give each player a pool of points with which to buy their attribute score. This works well ensuring that everyone is on the same footing, but with no randomness it can feel too mechanistic. Some randomness is fun!</p>
+
+            <p>I did come across one interesting idea <a href="https://marketplace.roll20.net/browse/gameaddon/431/attribute-drafting-and-role-assignment">here</a>, where players would determine their attribute scores as a group by taking turns drafting cards with pairs of scores on them.</p>
+            
+
+            <p>What I didn't like about the implementation was that the scores averaged out to less than you'd expect to get with the standard die rolling or point buy methods. Also there wasn't an option to change the power level of the game by generating higher scores. While, that's not exactly disastrous, wouldn't it be nice if you could generate a set of cards that was equivalent to the technique the players would use otherwise?</p>
+
+            </div>
+          </help-popup>
+      </div>
+
     </div>
 
-                  v-bind:cardfunction="()=>{pc.TakeCard(draft.PlayerPicksCard(pc.id,item.id))}"
-    -->
     <div id="page_roll" v-if="Drafting === false">
 
       <div id="cardlistoptions">
@@ -223,7 +236,8 @@
         
       </div>
       
-      <button @click="Drafting = false">Back</button>
+      <div><button @click="Drafting = false">Back</button></div>
+      <div><button v-if="Draft.Cards.length == 0" @click="copyResults">Copy results to clipboard</button></div>  
     </div>
   </div>
 
@@ -259,6 +273,12 @@
     })
     
     Vue.component("help-popup", {
+      props: {
+        'widthoverride':{
+          default:'width:300px',
+          required:false,
+        }
+      },
       template: "#help-template"
     })
 
@@ -288,6 +308,7 @@
         Rolls: 0,
         Rolled: false,
         Drafting: false,
+        MainHelpStyle:"width:500px",
         DiceRollMethodLabel: "dl4d6", //kinda kludgy, for help menu functionality
         smallNum: new Intl.NumberFormat('en-US',{maximumFractionDigits:1}),
         StatCardPool: [
@@ -321,6 +342,7 @@
           PointBuy:false,
           ClampPointBuy:false,
           RollMethod: false,
+          App: false,
         }
       }},
       methods: {
@@ -372,7 +394,11 @@
           this.Draft = new Draft(this.StatCardPool,this.CM.PartySize);
           this.Players = this.Draft.Players;
 
-        }
+        },
+        copyResults: function() {
+          Output =  "test1\nTest2";
+          navigator.clipboard.writeText(Output);
+        },
       },
       mounted() {
         //Want to change the default point buy to D&D 3.5
