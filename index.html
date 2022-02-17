@@ -43,7 +43,7 @@
 
     <!--id for the item id is index not id and does not produce a unique id - fix!-->
     <script type="text/x-template" id="draft-player">
-      <div class="draft-player-tableau">
+      <div class="draft-player-tableau" v-bind:class="[draft.ActivePlayerIndex == pc.id ? 'active-highlight' : 'no-highlight']">
         <div class="draft-player-name">
             <p> {{ pc.Name }} <span class="helper-text" @click="editName = !editName">EDIT NAME</span></p>
             <p>&#20<input @change="EditNameConfirm($event.target.value)" placeholder="Rename" v-if="editName"></p>
@@ -396,7 +396,16 @@
 
         },
         copyResults: function() {
-          Output =  "test1\nTest2";
+          let Output =  "";
+          for(let Player of this.Players){
+            Output += Player.Name;
+            Output += "\n"
+            let StatList = Player.StatList();
+            for(let Stat of StatList){
+              Output += Stat;
+              Output += "\n"
+            }
+          }
           navigator.clipboard.writeText(Output);
         },
       },

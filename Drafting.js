@@ -6,7 +6,7 @@
 //Types of draft
 class Draft {
 
-	constructor(Cards, PlayerCount){
+	constructor(Cards, PlayerCount, ExtraCards){
 		this.Players = [];
 
 		if(typeof Cards !== "undefined"){
@@ -20,6 +20,12 @@ class Draft {
 			for(let i=0; i<PlayerCount; i++){
 				this.AddPlayer(i);
 			}
+		}
+
+		if(typeof ExtraCards !== "undefined"){
+			this.ExtraCards = ExtraCards;
+		} else{
+			this.ExtraCards = 0;
 		}
 
 		this.DraftType = "standard";
@@ -41,8 +47,12 @@ class Draft {
 		}
 	}
 
+	IsFinishing(){
+		return (this.Cards.length-this.ExtraCards < 2); 
+	}
+
 	IsFinished(){
-		return (this.Cards.length < 1); 
+		return (this.Cards.length-this.ExtraCards < 1); 
 	}
 
 	SetDraftType(DraftType){
@@ -78,9 +88,17 @@ class Draft {
 	}
 
 	AdvanceTurn(){
+		if(this.IsFinishing()) {
+			this.EndDraft();
+			return;
+		}
 		switch(this.DraftType){
 			default:return this.AdvanceTurnDefault();
 		}
+	}
+
+	EndDraft() {
+		this.ActivePlayerIndex = null;
 	}
 
 	AdvanceTurnDefault(){
@@ -114,7 +132,11 @@ class Draft {
 class Player {
 	constructor(id){
 		this.Cards = [];
-		this.Name = "Player "+(id+1);
+		if(typeof id !== "undefined"){
+			this.Name = "Player "+(id+1);
+		} else {
+			this.Name = "New Player"
+		}
 		this.id = id;
 	}
 
@@ -123,6 +145,24 @@ class Player {
 	}
 	GiveCard(){
 		return this.Cards.pop();
+	}
+	StatList(topN){
+		//returns the t
+		//defaults to 6
+		if(typeof topN !== "undefined"){
+			topN = 6;
+		}
+		return this.AllScores().slice(0,topN);
+	}
+	AllScores() {
+		let vals =[];
+		for(let Card of this.Cards) {
+			vals.push(Card.High);
+			vals.push(Card.Low);
+		}
+		vals.sort((a,b)=>(b-a));
+		return vals;
+
 	}
 }
 

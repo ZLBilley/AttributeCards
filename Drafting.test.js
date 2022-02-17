@@ -204,3 +204,16 @@ test.each(
 		}
 
 	)
+
+test('Does Statlist work?',
+	()=>{
+		let P = new Draft.Player(1);
+		P.Cards = [
+		{High:2,Low:1},
+		{High:4, Low:3},
+		];
+		expect(
+			P.StatList()
+			).toStrictEqual([4,3,2,1])
+		}
+	)

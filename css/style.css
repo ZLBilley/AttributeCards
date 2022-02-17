@@ -65,12 +65,12 @@ table {
 
 .page-draft{
 	/*width: 1100px;*/
-	background-color: lightseagreen;
+	/*background-color: lightseagreen;*/
 }
 
 .draft-player-card-area-container{
 	/*width: 1000px;*/
-	background-color: palevioletred;
+	/*background-color: palevioletred;*/
 	width: 100%;
 	display:flex;
 	justify-content: center;
@@ -78,14 +78,22 @@ table {
 	flex-direction:row;
 }
 
+.active-highlight {
+	border:  3px solid yellowgreen;
+}
+
+.no-highlight {
+	border:  3px solid cadetblue;
+}
+
 .draft-player-card-area{
-	background-color: indianred;
+	/*background-color: indianred;*/
 }
 
 .draft-player-tableau{
 	color: #900;
-	border:  3px solid cadetblue;
-	background-color: powderblue;
+	/*order:  3px solid cadetblue;*/
+	/*background-color: powderblue;*/
 	width: 400px;
 	/*height:  120px;*/
 	flex-wrap: wrap;
