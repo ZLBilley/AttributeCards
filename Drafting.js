@@ -6,13 +6,16 @@
 //Types of draft
 class Draft {
 
-	constructor(Cards, PlayerCount, ExtraCards){
+	constructor(Cards, PlayerCount, PlayerMaxCards){
 		this.Players = [];
 		this.ActivePlayerIndex = null;
 		this.LastPlayerIndices = [];
+		this.DraftType = "standard";
+		this.DraftStarted = false;
 
 		if(typeof Cards !== "undefined"){
 			this.Cards = Cards.map((x)=>x); //Should create a copy of Cards
+			this.ExtraCards = Cards.length-this.MaxTotalCards;
 		}
 
 
@@ -23,14 +26,20 @@ class Draft {
 			}
 		}
 
-		if(typeof ExtraCards !== "undefined"){
-			this.ExtraCards = ExtraCards;
+		if(typeof PlayerMaxCards !== "undefined"){
+			this.PlayerMaxCards = PlayerMaxCards;
 		} else{
-			this.ExtraCards = 0;
+
+			this.PlayerMaxCards = 3;
 		}
 
-		this.DraftType = "standard";
-		this.DraftStarted = false;
+		this.MaxTotalCards = PlayerMaxCards * PlayerCount;
+		/*
+		console.log("Players: "+this.Players.length);
+		console.log("PlayerMaxCards: "+this.PlayerMaxCards);
+		if(typeof Cards !== "undefined"){
+			console.log("Cards: "+this.Cards.length);
+		}*/
 	}
 
 	AddPlayer(){
@@ -88,17 +97,17 @@ class Draft {
 		}
 	}
 
-	AdvanceTurn(){
+	AdvanceTurn(Player, Card){
 		//makes a list for undoing
 		if(this.ActivePlayerIndex !== null) {
 			this.LastPlayerIndices.push(this.ActivePlayerIndex)
 		}
-		if(this.IsFinishing()) {
+		if(this.IsFinished()) {
 			this.EndDraft();
 			return;
 		}
 		switch(this.DraftType){
-			case "fewestpoints":return this.AdvanceTurnFewestPoints();
+			case "fewestpoints":return this.AdvanceTurnFewestPoints(Player, Card);
 			default:return this.AdvanceTurnDefault();
 		}
 	}
@@ -115,40 +124,63 @@ class Draft {
 		}
 	}
 
-	AdvanceTurnFewestPoints(){
-		if (this.ActivePlayerIndex === null){
-			this.ActivePlayerIndex = 0;
-		} else {
-			let PlayersCopy = [];
-			for(let Player of this.Players){
-				PlayersCopy.push(Player);
+	AdvanceTurnFewestPoints(Player, Card){
+		let PlayersCopy = [];
+		for(let P of this.Players){
+			if(P.Cards.length<this.PlayerMaxCards){
+				if(P.id == Player){
+					var AddPoints = Card.Points;
+				} else{
+					var AddPoints = 0;
+				}
+
+				PlayersCopy.push(
+						{id:P.id, points:(P.GetPointsHeld()+AddPoints)}
+					);
+
 			}
-			//shuffle them
-			PlayersCopy.sort(()=>Math.random()-0.5);
-			//sort
-			PlayersCopy.sort((a,b)=>(b.GetPointsHeld()-a.GetPointsHeld()));
-			alert(
-				PlayersCopy[0].id+":"+PlayersCopy[0].GetPointsHeld()+" "+
-				PlayersCopy[1].id+":"+PlayersCopy[1].GetPointsHeld()+" "+
-				PlayersCopy[2].id+":"+PlayersCopy[2].GetPointsHeld()+" "+
-				PlayersCopy[3].id+":"+PlayersCopy[3].GetPointsHeld()+" "
-				);
-			this.ActivePlayerIndex = PlayersCopy[0].id;
-		}		
+		}
+		//console.log("Players: "+PlayersCopy)
+
+
+		//shuffle them
+		PlayersCopy.sort(()=>Math.random()-0.5);
+
+		//sort
+		PlayersCopy.sort( (a,b) => (a.points-b.points) );
+
+		/*console.log("Players: "+PlayersCopy)
+		let LogOutput = ""
+		//for(let P in PlayersCopy){
+		for(let i = 0; i< PlayersCopy.length; i++){
+			let P = PlayersCopy[i]
+			console.log(P)
+			LogOutput += "Player "+P.id+" Points held: "+P.points+"\n"
+		}
+		console.log(
+			LogOutput
+			);*/
+		if(PlayersCopy.length > 0) {
+			this.ActivePlayerIndex = PlayersCopy[0].id;	
+		} else{
+			this.ActivePlayerIndex = null;
+		}
+			
 	}
 
-	PlayerPicksCard(Player,Card){
+	PlayerPicksCard(Player,CardID){ //Need to sort out Player vs PlayerID in variable names for less confusion
 		if(this.DraftStarted) {
 			switch(this.DraftType) {
-				default:return this.PlayerPicksCardDefault(Player,Card);
+				default:return this.PlayerPicksCardDefault(Player,CardID);
 			}
 		}
 	}
 
-	PlayerPicksCardDefault(Player,Card){
+	PlayerPicksCardDefault(Player,CardID){
 		if(Player == this.ActivePlayerIndex) {
-			this.AdvanceTurn();//This needs to work in the other order 
-			return this.DealCard(Card); //but this bugged out when I set it to a variable, whyyyy?
+			var CardDealt = this.DealCard(CardID);
+			this.AdvanceTurn(Player, CardDealt);
+			return CardDealt; 
 		}
 
 	}
