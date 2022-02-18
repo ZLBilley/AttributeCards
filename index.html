@@ -57,20 +57,6 @@
               v-bind:key='pc.id+"chosencard"+item.id'
           ></statcard-imagecard>         
         </div>
-        <p v-if="draft.ActivePlayerIndex == pc.id">choose a card:</p>
-        <div class="draft-player-card-selection">
-          {{pc.id}} {{draft.ActivePlayerIndex}}     
-          <statcard-imagecard-clickable
-              class="card"
-              v-for="item in draft.CardSelection(pc.id)"
-              v-bind:statcard="item"
-              v-bind:draft="draft"
-              v-bind:owner="pc"
-              v-bind:key="item.id"
-          ></statcard-imagecard-clickable>          
-        </div>
-
-
       </div>
     </script>
 
@@ -222,7 +208,28 @@
     </div>
 
     <div class="page-draft" v-if="Drafting">
+      <p v-if="Draft.DraftStarted == false">
+      Draft Order
+          <select name="select_DraftType" @change="onSelect_DraftTypeMenu($event.target.value)">
+            <option value="default">Default Order</option>
+            <option value="fewestpoints">Fewest Points</option>
+          </select>    
+      </p>
       <button @click="Draft.StartDraft()" v-if="Draft.DraftStarted == false">Begin</button>
+
+      <p v-if="Draft.ActivePlayerIndex !== null">choose a card:</p>
+      <!--<p>{{ Draft.ActivePlayerIndex }}</p>
+      <p>{{ Players[Draft.ActivePlayerIndex] }}</p>-->
+      <div class="draft-player-card-selection" v-if="Draft.ActivePlayerIndex !== null"> 
+        <statcard-imagecard-clickable
+            class="card"
+            v-for="item in Draft.CardSelection(Draft.ActivePlayerIndex)"
+            v-bind:statcard="item"
+            v-bind:draft="Draft"
+            v-bind:owner="Players[Draft.ActivePlayerIndex]"
+            v-bind:key="item.id"
+        ></statcard-imagecard-clickable>          
+      </div>
 
       <div class="draft-player-card-area-container">
         <draft-player
@@ -235,7 +242,8 @@
         </draft-player> 
         
       </div>
-      
+
+      <div><button @click="Draft.Undo()" v-if="Draft.DraftStarted">Undo</button></div>
       <div><button @click="Drafting = false">Back</button></div>
       <div><button v-if="Draft.Cards.length == 0" @click="copyResults">Copy results to clipboard</button></div>  
     </div>
@@ -381,6 +389,9 @@
           else {
             this.CM.PointBuyConstraint = false;
           }
+        },
+        onSelect_DraftTypeMenu: function(s) {
+          this.Draft.DraftType = s;
         },
         onSelect_RollTypeMenu: function(s) {
           this.CM.Roll = RollMethod(s);

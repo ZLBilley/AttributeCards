@@ -217,3 +217,20 @@ test('Does Statlist work?',
 			).toStrictEqual([4,3,2,1])
 		}
 	)
+
+test('GetPointsHeld can sum three 5-point cards',
+	()=>{
+		let card={
+			High:4,
+			Low:2,
+			Points:5
+		};
+		let P = new Draft.Player(1);
+		P.Cards=[card,card,card];
+		expect(
+			P.GetPointsHeld()
+			).toBe(15)
+	}
+
+
+	)
