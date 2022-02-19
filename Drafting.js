@@ -107,6 +107,7 @@ class Draft {
 			return;
 		}
 		switch(this.DraftType){
+			case "snake":return this.AdvanceTurnSnake();
 			case "fewestpoints":return this.AdvanceTurnFewestPoints(Player, Card);
 			default:return this.AdvanceTurnDefault();
 		}
@@ -166,6 +167,44 @@ class Draft {
 			this.ActivePlayerIndex = null;
 		}
 			
+	}
+
+	AdvanceTurnSnake() { //DOesn't work right with 2 players
+		//console.log("Last Players list: "+this.LastPlayerIndices)
+		//0 or 1 previous turns, use default
+		if(this.LastPlayerIndices.length<=1){
+			this.AdvanceTurnDefault();
+			return;
+		}
+		//if we are at the high end
+		if(this.LastPlayerIndices.slice(-1) >= this.Players.length-1){
+			// if has repeated, go down 1
+			if(this.LastPlayerIndices.slice(-1)[0] == this.LastPlayerIndices.slice(-2,-1)[0]) {
+				this.ActivePlayerIndex -= 1;
+				return;
+			} else{ // else repeat
+				return;
+			}
+		}
+
+		//this gets separated out here so that code will work with 2 players
+		if(this.LastPlayerIndices.length<=2){ 
+			this.AdvanceTurnDefault();
+			return;
+		}		
+
+		if(this.LastPlayerIndices.slice(-1) <= 0){
+			// if has repeated, go up 1
+			if(this.LastPlayerIndices.slice(-1)[0] == this.LastPlayerIndices.slice(-2,-1)[0]) {
+				this.ActivePlayerIndex += 1;
+				return;
+			} else{ // else repeat
+				return;
+			}
+		}
+		//else continue on path (same interval as last time
+		this.ActivePlayerIndex += (this.LastPlayerIndices.slice(-1)-this.LastPlayerIndices.slice(-2,-1));
+		return;
 	}
 
 	PlayerPicksCard(Player,CardID){ //Need to sort out Player vs PlayerID in variable names for less confusion

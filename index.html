@@ -109,7 +109,6 @@
         <div>
           Number of players
           <select name="select_PlayerCount" @change="onSelect_PlayerCountMenu($event.target.value)">
-            <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
             <option value="4" selected>4</option>
@@ -213,6 +212,7 @@
           <select name="select_DraftType" @change="onSelect_DraftTypeMenu($event.target.value)">
             <option value="default">Default Order</option>
             <option value="fewestpoints">Fewest Points</option>
+            <option value="snake">Snake Draft</option>
           </select>    
       </p>
       <button @click="Draft.StartDraft()" v-if="Draft.DraftStarted == false">Begin</button>
