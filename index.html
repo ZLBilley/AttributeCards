@@ -210,12 +210,22 @@
       <p v-if="Draft.DraftStarted == false">
       Draft Order
           <select name="select_DraftType" @change="onSelect_DraftTypeMenu($event.target.value)">
-            <option value="default">Default Order</option>
+            <option value="default">Round Robin</option>
             <option value="fewestpoints">Fewest Points</option>
             <option value="snake">Snake Draft</option>
-          </select>    
+          </select>
+
+          <button id="show-help-drafttype" @click="showHelp.DraftType = true">?</button>    
       </p>
+
       <button @click="Draft.StartDraft()" v-if="Draft.DraftStarted == false">Begin</button>
+      
+      <help-popup v-if="showHelp.DraftType" @close="showHelp.DraftType = false" name="helpPopupDraftType">
+        <h3 slot="header">{{ DraftTypeMenu[Draft.DraftType].label }}</h3>
+        <div slot="body">{{ DraftTypeMenu[Draft.DraftType].helptext }}</div>
+        
+      </help-popup>
+
 
       <p v-if="Draft.ActivePlayerIndex !== null">choose a card:</p>
       <!--<p>{{ Draft.ActivePlayerIndex }}</p>
@@ -346,10 +356,19 @@
         helptext:'Each ability score is determined by rolling 5 six sided dice and keeping the highest three, generating a number between 3 and 18.',
         helptext2:'This typically results in more powerful characters'},
         },
+        DraftTypeMenu: {
+          "standard":{label:"Round Robin",helptext:
+          "Starting with the first player, players take their turns in order. When everyone has taken their turn, the first player starts over again."},
+          "fewestpoints":{label:"Fewest Points",helptext:
+          "THe next player to choose a card is chosen randomly from the players who are tied for the lowest total value of cards that they have already picked and have not chosen all their cards already."},
+          "snake":{label:"Snake Draft", helptext:
+          "Rounds alternate between going from the first listed player to the last and starting with the last listed player and going back in reverse order to the first."},
+        },
         showHelp:{
           PointBuy:false,
           ClampPointBuy:false,
           RollMethod: false,
+          DraftType: false,
           App: false,
         }
       }},

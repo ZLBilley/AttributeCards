@@ -13,12 +13,6 @@ class Draft {
 		this.DraftType = "standard";
 		this.DraftStarted = false;
 
-		if(typeof Cards !== "undefined"){
-			this.Cards = Cards.map((x)=>x); //Should create a copy of Cards
-			this.ExtraCards = Cards.length-this.MaxTotalCards;
-		}
-
-
 		if(typeof PlayerCount !== "undefined"){
 
 			for(let i=0; i<PlayerCount; i++){
@@ -33,7 +27,13 @@ class Draft {
 			this.PlayerMaxCards = 3;
 		}
 
-		this.MaxTotalCards = PlayerMaxCards * PlayerCount;
+		this.MaxTotalCards = this.PlayerMaxCards * this.Players.length;
+
+		if(typeof Cards !== "undefined"){
+			this.Cards = Cards.map((x)=>x); //Should create a copy of Cards
+			this.ExtraCards = this.Cards.length-this.MaxTotalCards;
+		}
+
 		/*
 		console.log("Players: "+this.Players.length);
 		console.log("PlayerMaxCards: "+this.PlayerMaxCards);
@@ -102,6 +102,7 @@ class Draft {
 		if(this.ActivePlayerIndex !== null) {
 			this.LastPlayerIndices.push(this.ActivePlayerIndex)
 		}
+		console.log("Cards left: "+(this.Cards.length-this.ExtraCards) )
 		if(this.IsFinished()) {
 			this.EndDraft();
 			return;
